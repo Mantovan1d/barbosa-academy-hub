@@ -3,6 +3,7 @@ import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Send } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
+import PageHeader from '@/components/PageHeader';
 
 const ComentariosPage: React.FC = () => {
   const { comments, addComment, user } = useApp();
@@ -14,7 +15,6 @@ const ComentariosPage: React.FC = () => {
       id: Date.now().toString(),
       userId: user.id,
       userName: user.nome,
-      loja: user.loja,
       text: text.trim(),
       timestamp: new Date().toISOString(),
     });
@@ -28,19 +28,14 @@ const ComentariosPage: React.FC = () => {
 
   return (
     <div className="min-h-screen pb-safe">
-      <header className="border-b border-border bg-card/80 px-4 py-3 backdrop-blur-md">
-        <div className="mx-auto max-w-lg">
-          <h1 className="font-heading text-lg font-bold"><span className="text-primary">BARBOSA</span> ACADEMY</h1>
-        </div>
-      </header>
+      <PageHeader />
 
       <div className="mx-auto max-w-lg px-4 py-6">
         <div className="mb-6 flex items-center gap-2">
-          <MessageCircle size={24} className="text-accent" />
+          <MessageCircle size={24} className="text-primary" />
           <h2 className="font-heading text-xl font-bold">Comentários</h2>
         </div>
 
-        {/* Input */}
         <div className="mb-6 flex gap-2">
           <input
             value={text}
@@ -54,15 +49,11 @@ const ComentariosPage: React.FC = () => {
           </Button>
         </div>
 
-        {/* Comments */}
         <div className="space-y-3">
           {comments.map(c => (
             <div key={c.id} className="rounded-xl border border-border bg-card p-4 animate-fade-in">
-              <div className="mb-2 flex items-center justify-between">
-                <div>
-                  <span className="text-sm font-semibold text-foreground">{c.userName}</span>
-                  <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">{c.loja}</span>
-                </div>
+              <div className="mb-2">
+                <span className="text-sm font-semibold text-foreground">{c.userName}</span>
               </div>
               <p className="text-sm text-foreground/90">{c.text}</p>
               <p className="mt-2 text-[10px] text-muted-foreground">{formatTime(c.timestamp)}</p>

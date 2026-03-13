@@ -1,19 +1,20 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle, CheckCircle2, Play } from 'lucide-react';
+import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
+import PageHeader from '@/components/PageHeader';
+
+const YOUTUBE_VIDEO_ID = 'YFX-uZo9Ekk';
 
 const CursoPage: React.FC = () => {
-  const { videoCompleted, setVideoCompleted, user } = useApp();
+  const { videoCompleted, setVideoCompleted } = useApp();
   const [progress, setProgress] = useState(0);
   const [showExitWarning, setShowExitWarning] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Simulate video progress
-  const startVideo = useCallback(() => {
-    setIsPlaying(true);
+  // Simulate progress tracking (since YouTube API with controls=0 is limited)
+  const startTracking = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       setProgress(prev => {
@@ -22,14 +23,15 @@ const CursoPage: React.FC = () => {
           setVideoCompleted(true);
           return 100;
         }
-        return prev + 0.5;
+        return prev + 0.3;
       });
-    }, 150);
+    }, 300);
   }, [setVideoCompleted]);
 
   useEffect(() => {
+    startTracking();
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isPlaying && !videoCompleted) {
+      if (!videoCompleted) {
         e.preventDefault();
         setShowExitWarning(true);
       }
@@ -39,55 +41,26 @@ const CursoPage: React.FC = () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isPlaying, videoCompleted]);
+  }, [videoCompleted, startTracking]);
 
   return (
     <div className="min-h-screen pb-safe">
-      {/* Header */}
-      <header className="border-b border-border bg-card/80 px-4 py-3 backdrop-blur-md">
-        <div className="mx-auto flex max-w-lg items-center justify-between">
-          <div>
-            <h1 className="font-heading text-lg font-bold">
-              <span className="text-primary">BARBOSA</span> ACADEMY
-            </h1>
-          </div>
-          {user && (
-            <div className="text-right text-xs text-muted-foreground">
-              <p className="font-medium text-foreground">{user.nome.split(' ')[0]}</p>
-              <p>{user.loja}</p>
-            </div>
-          )}
-        </div>
-      </header>
+      <PageHeader showUser />
 
       <div className="mx-auto max-w-lg px-4 py-6">
         <h2 className="mb-1 font-heading text-xl font-bold text-foreground">Treinamento Cross Merchandising</h2>
         <p className="mb-6 text-sm text-muted-foreground">Assista ao vídeo completo para liberar o quiz</p>
 
-        {/* Video area */}
+        {/* YouTube Video */}
         <div className="relative mb-4 aspect-video overflow-hidden rounded-xl border border-border bg-muted">
-          {!isPlaying ? (
-            <button
-              onClick={startVideo}
-              className="group absolute inset-0 flex flex-col items-center justify-center gap-3"
-            >
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary shadow-lg transition-transform group-hover:scale-110">
-                <Play size={28} className="ml-1 text-primary-foreground" />
-              </div>
-              <span className="text-sm font-medium text-muted-foreground">Clique para iniciar o vídeo</span>
-            </button>
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <div className="text-center">
-                <div className="mb-2 font-heading text-5xl font-bold text-primary">
-                  {Math.floor(progress)}%
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {videoCompleted ? 'Vídeo concluído!' : 'Reproduzindo...'}
-                </p>
-              </div>
-            </div>
-          )}
+          <iframe
+            ref={iframeRef}
+            src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?controls=0&disablekb=1&rel=0&modestbranding=1&autoplay=1`}
+            className="absolute inset-0 h-full w-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="Treinamento Cross Merchandising"
+          />
         </div>
 
         {/* Progress bar */}
@@ -103,22 +76,22 @@ const CursoPage: React.FC = () => {
           <span>{progress >= 95 ? '✓ Liberado' : 'Mínimo: 95%'}</span>
         </div>
 
-        {/* Warning / Success messages */}
+        {/* Warning */}
         {showExitWarning && (
           <div className="mt-4 flex items-start gap-3 rounded-lg border border-secondary bg-secondary/10 p-4">
             <AlertTriangle size={20} className="mt-0.5 shrink-0 text-secondary" />
             <div>
-              <p className="text-sm font-semibold text-secondary">Atenção!</p>
-              <p className="text-xs text-muted-foreground">Se sair agora, seu progresso será perdido. Continue assistindo para liberar o quiz.</p>
+              <p className="text-sm font-semibold text-secondary">⚠️ Se sair, o vídeo reinicia</p>
+              <p className="text-xs text-muted-foreground">Continue assistindo para liberar o quiz.</p>
             </div>
           </div>
         )}
 
         {videoCompleted && (
-          <div className="mt-4 flex items-start gap-3 rounded-lg border border-green-600 bg-green-600/10 p-4">
-            <CheckCircle2 size={20} className="mt-0.5 shrink-0 text-green-500" />
+          <div className="mt-4 flex items-start gap-3 rounded-lg border border-secondary bg-secondary/10 p-4">
+            <CheckCircle2 size={20} className="mt-0.5 shrink-0 text-secondary" />
             <div>
-              <p className="text-sm font-semibold text-green-500">Vídeo Concluído!</p>
+              <p className="text-sm font-semibold text-secondary">Vídeo Concluído!</p>
               <p className="text-xs text-muted-foreground">Você já pode acessar o quiz na aba abaixo.</p>
             </div>
           </div>
