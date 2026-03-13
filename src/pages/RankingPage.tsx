@@ -2,6 +2,7 @@ import React from 'react';
 import { useApp } from '@/context/AppContext';
 import { Trophy, Medal, Award, TrendingUp } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
+import PageHeader from '@/components/PageHeader';
 
 const podiumIcons = [Trophy, Medal, Award];
 const podiumColors = ['text-secondary', 'text-muted-foreground', 'text-orange-600'];
@@ -12,11 +13,7 @@ const RankingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen pb-safe">
-      <header className="border-b border-border bg-card/80 px-4 py-3 backdrop-blur-md">
-        <div className="mx-auto max-w-lg">
-          <h1 className="font-heading text-lg font-bold"><span className="text-primary">BARBOSA</span> ACADEMY</h1>
-        </div>
-      </header>
+      <PageHeader />
 
       <div className="mx-auto max-w-lg px-4 py-6">
         <div className="mb-6 flex items-center gap-2">
@@ -25,7 +22,6 @@ const RankingPage: React.FC = () => {
         </div>
         <p className="mb-6 text-xs text-muted-foreground">Classificação baseada na 1ª tentativa do quiz</p>
 
-        {/* Top 3 */}
         {ranking.length > 0 && (
           <div className="mb-6 flex items-end justify-center gap-3">
             {[1, 0, 2].map(pos => {
@@ -47,7 +43,6 @@ const RankingPage: React.FC = () => {
           </div>
         )}
 
-        {/* Full list */}
         <div className="space-y-2">
           {ranking.map((entry, i) => {
             const isCurrentUser = user?.id === entry.user.id;
@@ -66,7 +61,6 @@ const RankingPage: React.FC = () => {
                   <p className="truncate text-sm font-medium text-foreground">
                     {entry.user.nome} {isCurrentUser && <span className="text-xs text-primary">(você)</span>}
                   </p>
-                  <p className="text-xs text-muted-foreground">{entry.user.loja}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-bold text-foreground">{entry.score}/{entry.total}</p>

@@ -10,6 +10,7 @@ import QuizPage from "./pages/QuizPage";
 import RankingPage from "./pages/RankingPage";
 import ComentariosPage from "./pages/ComentariosPage";
 import PremiacoesPage from "./pages/PremiacoesPage";
+import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -17,6 +18,13 @@ const queryClient = new QueryClient();
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useApp();
   if (!user) return <Navigate to="/" replace />;
+  return <>{children}</>;
+};
+
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useApp();
+  if (!user) return <Navigate to="/" replace />;
+  if (!user.isAdmin) return <Navigate to="/curso" replace />;
   return <>{children}</>;
 };
 
@@ -28,6 +36,7 @@ const AppRoutes = () => (
     <Route path="/ranking" element={<ProtectedRoute><RankingPage /></ProtectedRoute>} />
     <Route path="/comentarios" element={<ProtectedRoute><ComentariosPage /></ProtectedRoute>} />
     <Route path="/premiacoes" element={<ProtectedRoute><PremiacoesPage /></ProtectedRoute>} />
+    <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

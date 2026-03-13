@@ -51,12 +51,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        monster: {
+          green: "hsl(var(--monster-green))",
+        },
         barbosa: {
-          red: "hsl(var(--barbosa-red))",
-          yellow: "hsl(var(--barbosa-yellow))",
           blue: "hsl(var(--barbosa-blue))",
-          dark: "hsl(var(--barbosa-dark))",
-          light: "hsl(var(--barbosa-light))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -91,17 +90,12 @@ export default {
           from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
-        "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 5px hsl(var(--barbosa-red) / 0.3)" },
-          "50%": { boxShadow: "0 0 20px hsl(var(--barbosa-red) / 0.6)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out forwards",
         "slide-up": "slide-up 0.6s ease-out forwards",
-        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
       },
     },
   },
